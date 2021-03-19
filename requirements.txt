@@ -1,7 +1,7 @@
 click==6.7
 Flask==0.12
 itsdangerous==0.24
-Jinja2==2.9.4
+Jinja2==2.11.3
 MarkupSafe==0.23
 mwparserfromhell==0.4.4
 numpy==1.12.0
