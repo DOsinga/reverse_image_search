@@ -1,0 +1,86 @@
+<script type="text/markdown" id="info">
+name: Reverse Image Search
+description: >
+  Use a pretrained image classifier to power a reverse image search engine like the Tineye or GoogleImage search. Returns only from a rather select set of images.
+type: ml
+github: reverse_image_search
+</script>
+
+<P>
+    Try it out below:
+</P>
+
+<script>
+    $(function () {
+        $(".clickable-row").click(function() {
+            window.document.location = $(this).data("href");
+        });
+        $('#painting').change(function() {
+           $('#form').submit()
+        });
+    });
+
+</script>
+
+<style>
+    .clickable-row:hover {
+        background: #A5A5A5;
+        cursor: pointer;
+    }
+</style>
+
+<form id="form" method="post" enctype="multipart/form-data" action="/projects/reverse_image_search">
+    {% csrf_token %}
+<label>Select an image:
+    <input name="painting" id="painting" type="file" accept="image/*;capture=camera">
+</label>
+    <input type="submit" value="Search">
+</form>
+
+<br/>
+
+{% if image %}
+<p>
+    <span>Uploaded image:</span><br/>
+    <img src="data:image/jpeg;base64,{{ image }}" width="{{ image_width }}" height="{{ image_height }}">
+</p>
+{% endif %}
+
+{% if results %}
+<style>
+.thumb {
+    display: inline-block;
+    width: 200px;
+    height: 200px;
+    margin: 5px;
+    border: 3px solid #c99;
+    background-position: center center;
+    background-size: cover;
+}
+</style>
+<br/>
+<span>Most similar images found:</span>
+<table border="1" cellpadding="2" width="720">
+    <tr>
+    {% for img, dist in results %}
+        <td class="clickable-row" data-href="{{ img.wiki_url }}" width="33%">
+            <div class="thumb" style="background-image: url({{ img.image_url }});"></div>
+            <b>{{ img.wiki_name }}</b><br/>{{ img.description }}
+        </td>
+    {% endfor %}
+    </tr>
+</table>
+<br/>
+{% endif %}
+
+<P>
+    A set of images representing the categories in wikidata is indexed using
+    <a href="https://www.tensorflow.org/tutorials/image_recognition/">Google's Inception model</a>. For each
+    image we extract the top layer's vector. The uploaded image is treated the same - displayed are the
+    images that are closest.
+</P>
+<P>
+    For more information,
+    see <a href="http://blog.douweosinga.com/2017/01/building-reverse-image-search-engine.html">the blog post</a>, or check
+    out the code on <a href="https://github.com/DOsinga/reverse_image_search">Github</a>
+</P>
